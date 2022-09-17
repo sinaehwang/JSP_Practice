@@ -1,0 +1,24 @@
+
+# DB 생성
+DROP DATABASE IF EXISTS JSPTest;
+CREATE DATABASE JSPTest;
+
+# DB 선택 
+USE JSPTest;
+
+# 게시글 테이블 생성
+CREATE TABLE article(
+    id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    regDate DATETIME NOT NULL,
+    title CHAR(100) NOT NULL,
+    `body` TEXT NOT NULL
+);
+
+#임시게시글데이터
+INSERT INTO article
+SET regDate = NOW(),
+title = CONCAT('제목',RAND()),
+`body` = CONCAT('내용',RAND());
+
+SELECT *FROM article 
+

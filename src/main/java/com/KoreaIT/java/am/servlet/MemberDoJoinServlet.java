@@ -52,14 +52,24 @@ public class MemberDoJoinServlet extends HttpServlet {
 			String loginPw = request.getParameter("loginPw");
 			String name = request.getParameter("name");
 			
-			SecSql sql= SecSql.from("INSERT INTO `member` SET");
+			SecSql sql = SecSql.from("SELECT COUNT(*) FROM `member`");
+			sql.append("WHERE loginId=?",loginId);
+			
+			int isJoinavailableLoginId = DBUtil.selectRowIntValue(conn, sql);
+
+			if(isJoinavailableLoginId>0) {//같은 아이디가 있다면 0보다 클꺼니까
+				response.getWriter().append(String.format("<script> alert('%s는 이미 가입된 아이디입니다.');location.replace('join');</script>",loginId));
+				return;
+			}
+			
+			sql= SecSql.from("INSERT INTO `member` SET");
 			sql.append("regDate=NOW(),");
 			sql.append("loginId=?,",loginId);
 			sql.append("loginPw=?,",loginPw);
 			sql.append("`name`=?",name);
 			
 			int id = DBUtil.insert(conn, sql);
-			response.getWriter().append(String.format("<script> alert('%s님 가입완료');</script>",name));
+			response.getWriter().append(String.format("<script> alert('%s님 가입완료');location.replace('../home/main');</script>",name));
 			
 			
 		} catch (SQLException e) {

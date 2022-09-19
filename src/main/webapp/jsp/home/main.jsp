@@ -11,7 +11,10 @@
 </head>
 <body>
 	<h1>메인페이지</h1>
-	<div><a href="/JSP_AM/article/list">게시물 리스트</a></div>
+	<div>
+	<a href="../article/list">게시물 리스트</a>
+	<a href="../member/join">회원가입</a>
+	</div>
 	 
 </body>
 </html>

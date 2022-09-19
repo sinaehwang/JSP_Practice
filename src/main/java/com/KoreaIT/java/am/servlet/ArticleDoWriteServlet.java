@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.KoreaIT.java.am.Config;
 import com.KoreaIT.java.am.util.DBUtil;
 import com.KoreaIT.java.am.util.SecSql;
 
@@ -25,15 +26,15 @@ public class ArticleDoWriteServlet extends HttpServlet {
 		response.setContentType("text/html;charser=UTF-8");
 
 		// DB연결작업(해당서블렛으로 접근했을떄만 db연결을 하게된다
-		String url = "jdbc:mysql://127.0.0.1:3306/JSPTest?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
+		String url = Config.getUrl();
 
-		String user = "root";
+		String user = Config.getUser();
 
-		String password = "";
+		String password = Config.getPassWord();
 
 		Connection conn = null;
 		
-		String driverName = "com.mysql.jdbc.Driver";
+		String driverName = Config.getDriverName();
 		
 		try {
 			Class.forName(driverName);
@@ -45,7 +46,7 @@ public class ArticleDoWriteServlet extends HttpServlet {
 		}
 
 		try {
-			conn = DriverManager.getConnection(url, user, password);
+			conn = DriverManager.getConnection(Config.getUrl(), Config.getUser(), Config.getPassWord());
 			
 			String title = request.getParameter("title");
 			String body = request.getParameter("body");

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
 
 import com.KoreaIT.java.am.Config;
 import com.KoreaIT.java.am.util.DBUtil;
@@ -16,12 +15,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/modify")
-public class ArticleModifyServlet extends HttpServlet {
+@WebServlet("/member/doJoin")
+public class MemberDoJoinServlet extends HttpServlet {
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		
+		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html;charser=UTF-8");
 
 		// DB연결작업(해당서블렛으로 접근했을떄만 db연결을 하게된다
@@ -47,16 +48,20 @@ public class ArticleModifyServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(Config.getUrl(), Config.getUser(), Config.getPassWord());
 			
-			int id = Integer.parseInt(request.getParameter("id"));//수정할 게시글번호를 파라미터로 가져온다
+			String loginId = request.getParameter("loginId");
+			String loginPw = request.getParameter("loginPw");
+			String name = request.getParameter("name");
 			
-			SecSql sql =SecSql.from("SELECT * FROM article ");
-			sql.append("WHERE id =?",id);
+			SecSql sql= SecSql.from("INSERT INTO `member` SET");
+			sql.append("regDate=NOW(),");
+			sql.append("loginId=?,",loginId);
+			sql.append("loginPw=?,",loginPw);
+			sql.append("`name`=?",name);
 			
-			Map<String,Object>articleRow = DBUtil.selectRow(conn, sql);
+			int id = DBUtil.insert(conn, sql);
+			response.getWriter().append(String.format("<script> alert('%s님 가입완료');</script>",name));
 			
-			request.setAttribute("articleRow", articleRow);
-			request.getRequestDispatcher("/jsp/article/modify.jsp").forward(request, response);
-		
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -68,12 +73,12 @@ public class ArticleModifyServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
-
 	}
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);
 	}
+	
 
 }

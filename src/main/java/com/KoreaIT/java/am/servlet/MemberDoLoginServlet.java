@@ -15,9 +15,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
-@WebServlet("/member/doJoin")
-public class MemberDoJoinServlet extends HttpServlet {
+@WebServlet("/member/doLogin")
+public class MemberDoLoginServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -51,26 +52,27 @@ public class MemberDoJoinServlet extends HttpServlet {
 			
 			String loginId = request.getParameter("loginId");
 			String loginPw = request.getParameter("loginPw");
-			String name = request.getParameter("name");
 			
-			SecSql sql = SecSql.from("SELECT COUNT(*) FROM `member`");
+			SecSql sql = SecSql.from("SELECT * FROM `member`");
 			sql.append("WHERE loginId=?",loginId);
 			
-			int isJoinavailableLoginId = DBUtil.selectRowIntValue(conn, sql);
+			Map<String, Object> Loginmember = DBUtil.selectRow(conn, sql);
+			
+			if(Loginmember.isEmpty()) {
+				response.getWriter().append(String.format("<script> alert('%s는 존재하지않는 회원입니다.');location.replace('login');</script>",loginId));
+				return;
+			}
 
-			if(isJoinavailableLoginId>0) {//같은 아이디가 있다면 0보다 클꺼니까
-				response.getWriter().append(String.format("<script> alert('%s는 이미 가입된 아이디입니다.');location.replace('join');</script>",loginId));
+			if(((String)Loginmember.get("loginPw")).equals(loginPw)==false) {
+				response.getWriter().append(String.format("<script> alert('비밀번호가 일치하지 않습니다.');history.back();</script>"));
 				return;
 			}
 			
-			sql= SecSql.from("INSERT INTO `member` SET");
-			sql.append("regDate=NOW(),");
-			sql.append("loginId=?,",loginId);
-			sql.append("loginPw=?,",loginPw);
-			sql.append("`name`=?",name);
-			
-			int id = DBUtil.insert(conn, sql);
-			response.getWriter().append(String.format("<script> alert('%s님 가입완료');location.replace('../home/main');</script>",name));
+		HttpSession session = request.getSession();//request 객체를 이용해 session 정보를 얻어온다.
+		session.setAttribute("MemberLogId", Loginmember.get("loginId"));//session에 정보저장할때는 set을 이용한다.
+
+
+		response.getWriter().append(String.format("<script> alert('%s님 로그인 성공');location.replace('../home/main');</script>",Loginmember.get("name")));
 			
 			
 		} catch (SQLException e) {
@@ -85,12 +87,14 @@ public class MemberDoJoinServlet extends HttpServlet {
 			}
 		}
 	}
+	
+
+	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);
 	}
-
 	
 
 }

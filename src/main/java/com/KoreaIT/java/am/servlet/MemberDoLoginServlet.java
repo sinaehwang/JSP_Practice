@@ -59,17 +59,18 @@ public class MemberDoLoginServlet extends HttpServlet {
 			Map<String, Object> Loginmember = DBUtil.selectRow(conn, sql);
 			
 			if(Loginmember.isEmpty()) {
-				response.getWriter().append(String.format("<script> alert('%s는 존재하지않는 회원입니다.');location.replace('login');</script>",loginId));
+				response.getWriter().append(String.format("<script> alert('%s는 존재하지않는 회원입니다.');location.replace('../member/login');</script>",loginId));
 				return;
 			}
 
-			if(((String)Loginmember.get("loginPw")).equals(loginPw)==false) {
-				response.getWriter().append(String.format("<script> alert('비밀번호가 일치하지 않습니다.');history.back();</script>"));
+			if(Loginmember.get("loginPw").equals(loginPw)==false) {
+				response.getWriter().append(String.format("<script> alert('비밀번호가 일치하지 않습니다.');location.replace('../member/login');</script>"));
 				return;
 			}
 			
 		HttpSession session = request.getSession();//request 객체를 이용해 session 정보를 얻어온다.
 		session.setAttribute("MemberLogId", Loginmember.get("loginId"));//session에 정보저장할때는 set을 이용한다.
+		session.setAttribute("loginedMemberId", Loginmember.get("id"));
 
 
 		response.getWriter().append(String.format("<script> alert('%s님 로그인 성공');location.replace('../home/main');</script>",Loginmember.get("name")));

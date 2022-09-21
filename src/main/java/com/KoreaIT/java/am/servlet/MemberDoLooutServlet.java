@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebServlet("/member/dologout")
+@WebServlet("/member/doLogout")
 public class MemberDoLooutServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -19,6 +19,7 @@ public class MemberDoLooutServlet extends HttpServlet {
 		
 		HttpSession session = request.getSession();//session 정보를 가져오고
 		session.removeAttribute("MemberLogId");//session 안에있던 선택자 값을 지운다.
+		session.removeAttribute("loginedMemberId");//session 안에있던 선택자 값을 지운다.
 		response.getWriter().append(String.format("<script> alert('로그아웃되었습니다.');location.replace('../home/main');</script>"));
 		
 	}

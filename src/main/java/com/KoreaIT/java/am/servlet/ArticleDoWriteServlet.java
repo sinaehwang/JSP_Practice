@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/doWrite")
 public class ArticleDoWriteServlet extends HttpServlet {
@@ -25,6 +26,12 @@ public class ArticleDoWriteServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");//게시글 작성시 한글깨짐 방지
 		response.setContentType("text/html;charser=UTF-8");
 
+		HttpSession session = request.getSession();
+		
+		if(session.getAttribute("MemberId")==null) {
+			response.getWriter().append(String.format("<script> alert('로그인후 이용해주세요');location.replace('../member/login');</script>"));
+		}
+		
 		// DB연결작업(해당서블렛으로 접근했을떄만 db연결을 하게된다
 		String url = Config.getUrl();
 
@@ -51,8 +58,11 @@ public class ArticleDoWriteServlet extends HttpServlet {
 			String title = request.getParameter("title");
 			String body = request.getParameter("body");
 			
+			int MemberId = (int)session.getAttribute("MemberId");
+			
 			SecSql sql= SecSql.from("INSERT INTO article SET");
 			sql.append("regDate=NOW(),");
+			sql.append("memberId=?,",MemberId);
 			sql.append("title=?,",title);
 			sql.append("`body`=?",body);
 			

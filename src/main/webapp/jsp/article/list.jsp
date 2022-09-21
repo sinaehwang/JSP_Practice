@@ -6,8 +6,9 @@
 int currrentPage = (int)request.getAttribute("page");
 int totalPage = (int)request.getAttribute("totalPage");
 List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAttribute("articleRows");
-
 %>
+
+
 
 
 <!DOCTYPE html> 
@@ -17,13 +18,11 @@ List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAt
 <title>게시물리스트구현하기</title>
 </head>
 <body>
-	<div>
-	<a href="https://www.naver.com" target="_blank">버튼1</a>
-	<a href="/JSP_AM/article/list" target="_blank">버튼2</a>
-	</div>
 	
+
 	<h1>게시물리스트(최종)</h1>
-	
+<%@ include file="../part/topBar.jspf" %> <!-- 파일 part를 불러오려면 mainpage서블렛에서 세션의 로그인 정보를 리스트 서블렛에서도 포함해줘야함 -->
+	<p></p>
 	<div><a href="write">글쓰기</a></div>
 	
 	<table border = "1" bordercolor="green">

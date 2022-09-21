@@ -16,7 +16,9 @@ Map<String, Object> articleRow = (Map<String, Object>)request.getAttribute("arti
 </head>
 <body>
 	<h1><%=articleRow.get("id")%>번 게시글 수정</h1>
-
+	
+	<%@ include file="../part/topBar.jspf" %>
+	<p></p>
 	<form action="doModify" method="post"> <!-- action에는 전달할 곳을 적어준다. -->
 	<input type="hidden" name="id" value="${param.id}" />
 	<div>번호:<%=(int)articleRow.get("id") %></div>

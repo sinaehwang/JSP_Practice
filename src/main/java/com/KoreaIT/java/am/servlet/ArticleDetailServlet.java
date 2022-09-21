@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/detail")
 public class ArticleDetailServlet extends HttpServlet {
@@ -47,9 +48,26 @@ public class ArticleDetailServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(Config.getUrl(), Config.getUser(), Config.getPassWord());
 			
-			//response.getWriter().append("success");//연결테스트해서 출력나타내보기
+			HttpSession session = request.getSession();
 			
-			//DBUtil dbutil = new DBUtil(request,response); //연결이 완료되면 DB를 바로 사용함 서버에 대한 응답을 하려면 db 연결시 생성자를 넘겨줘야함
+			boolean isLogined = false;
+			int loginedMemberId =-1;
+			Map<String,Object>loginedMemberRow =null; //로그인이 됬다면 sql을 이용해 로그인된 멤버에 전체 정보를 가져와서 덮어씌워서 사용가능
+			
+			if(session.getAttribute("MemberLogId")!=null) {
+				loginedMemberId=(int)session.getAttribute("loginedMemberId");
+				isLogined = true;
+				
+				SecSql sql = SecSql.from("SELECT * FROM `member`");
+				sql.append("WHERE id = ?",loginedMemberId);
+				
+				loginedMemberRow = DBUtil.selectRow(conn, sql);
+				
+			}
+			
+			request.setAttribute("loginedMemberId", loginedMemberId);
+			request.setAttribute("isLogined", isLogined);
+			request.setAttribute("loginedMemberRow", loginedMemberRow);
 			
 			int id = Integer.parseInt(request.getParameter("id"));
 			

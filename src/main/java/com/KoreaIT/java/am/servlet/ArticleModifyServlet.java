@@ -55,6 +55,28 @@ public class ArticleModifyServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(Config.getUrl(), Config.getUser(), Config.getPassWord());
 			
+			//HttpSession session = request.getSession();
+			
+			boolean isLogined = false;
+			int loginedMemberId =-1;
+			Map<String,Object>loginedMemberRow =null; //로그인이 됬다면 sql을 이용해 로그인된 멤버에 전체 정보를 가져와서 덮어씌워서 사용가능
+			
+			if(session.getAttribute("MemberLogId")!=null) {
+				loginedMemberId=(int)session.getAttribute("loginedMemberId");
+				isLogined = true;
+				
+				SecSql sql = SecSql.from("SELECT * FROM `member`");
+				sql.append("WHERE id = ?",loginedMemberId);
+				
+				loginedMemberRow = DBUtil.selectRow(conn, sql);
+				
+			}
+			
+			request.setAttribute("loginedMemberId", loginedMemberId);
+			request.setAttribute("isLogined", isLogined);
+			request.setAttribute("loginedMemberRow", loginedMemberRow);
+			
+			
 			int id = Integer.parseInt(request.getParameter("id"));//수정할 게시글번호를 파라미터로 가져온다
 			
 			SecSql sql = SecSql.from("SELECT *");
@@ -63,7 +85,7 @@ public class ArticleModifyServlet extends HttpServlet {
 			
 			Map<String,Object>articleRow = DBUtil.selectRow(conn, sql);
 			
-			int loginedMemberId =(int)session.getAttribute("loginedMemberId");
+			loginedMemberId =(int)session.getAttribute("loginedMemberId");
 			
 			if(loginedMemberId != (int)articleRow.get("memberId")) {
 				

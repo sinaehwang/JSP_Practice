@@ -15,6 +15,8 @@ Map<String, Object> articleRow = (Map<String, Object>)request.getAttribute("arti
 <body>
 	<h1><%=(int)articleRow.get("id") %>번 게시물 상세보기</h1>
 	
+	<%@ include file="../part/topBar.jspf" %> <!-- 파일 part를 불러오려면 mainpage서블렛에서 세션의 로그인 정보를 리스트 서블렛에서도 포함해줘야함 -->
+	<p></p>
 	<div>번호:<%=(int)articleRow.get("id") %></div>
 	<div>날짜:<%=(LocalDateTime)articleRow.get("regDate") %></div>
 	<div>제목:<%=(String)articleRow.get("title")%></div>

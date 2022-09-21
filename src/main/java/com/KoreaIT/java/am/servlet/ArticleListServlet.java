@@ -70,10 +70,18 @@ public class ArticleListServlet extends HttpServlet {
 			sql.append("FROM article");
 			
 			int totalCount = DBUtil.selectRowIntValue(conn, sql);
+			
+			if(totalCount<0) {
+				response.getWriter().append(String.format("<script> alert('게시글이 없습니다.');location.replace('..home/main');</script>"));
+				return;
+			}
+			
 			int totalPage = (int)Math.ceil((double)totalCount/itemsInAPage);//실수연산을먼저해서 나머지를 발생시킨후 올림을 실행한후에 정수화를 해야함
 			
-			sql = SecSql.from("SELECT *");//sql문으로 재수정
-			sql.append("FROM article");
+			sql = SecSql.from("SELECT A.*,M.name AS writer");//sql문으로 재수정
+			sql.append("FROM article AS A");
+			sql.append("INNER JOIN `member` AS M");
+			sql.append("ON A.memberId =M.id");
 			sql.append("ORDER BY id DESC");
 			sql.append("LIMIT ?,?",limitFrom,itemsInAPage);
 				

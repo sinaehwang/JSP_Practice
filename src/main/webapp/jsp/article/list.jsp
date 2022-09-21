@@ -5,8 +5,11 @@
 <%
 int currrentPage = (int)request.getAttribute("page");
 int totalPage = (int)request.getAttribute("totalPage");
-List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAttribute("articleRows");//getAttribute는 객
+List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAttribute("articleRows");
+
 %>
+
+
 <!DOCTYPE html> 
 <html>
 <head>
@@ -35,6 +38,7 @@ List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAt
 			<th>번호</th>
 			<th>날짜</th>
 			<th>제목</th>
+			<th>작성자</th>
 			<th>삭제</th>
 			<th>수정</th>
 		</tr>
@@ -46,6 +50,7 @@ List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAt
 			<td><%=articleRow.get("id") %></td>
 			<td><%=articleRow.get("regDate") %></td>
 			<td><a href="detail?id=<%=articleRow.get("id")%>"><%=articleRow.get("title") %></a></td>
+			<td><%=articleRow.get("writer") %></td>
 			<td><a href="doDelete?id=<%=articleRow.get("id")%>">삭제</a></td>
 			<td><a href="modify?id=<%=articleRow.get("id")%>">수정</a></td>
 		</tr>

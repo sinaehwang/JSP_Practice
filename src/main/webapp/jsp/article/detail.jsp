@@ -19,6 +19,7 @@ Map<String, Object> articleRow = (Map<String, Object>)request.getAttribute("arti
 	<div>날짜:<%=(LocalDateTime)articleRow.get("regDate") %></div>
 	<div>제목:<%=(String)articleRow.get("title")%></div>
 	<div>내용:<%=(String)articleRow.get("body")%></div>
+	<div>작성자:<%=(String)articleRow.get("writer")%></div>
 	<p></p>
 	<a href="modify?id=${param.id }"><button style="margin:0px 10px;">수정</button></a><a href="doDelete?id=${param.id }"><button>삭제</button></a>
 	<!--상세페이지에 수정이랑 삭제버튼 추가함  -->

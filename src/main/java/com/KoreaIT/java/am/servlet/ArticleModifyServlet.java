@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/modify")
 public class ArticleModifyServlet extends HttpServlet {
@@ -23,6 +24,13 @@ public class ArticleModifyServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		response.setContentType("text/html;charser=UTF-8");
+		
+		HttpSession session = request.getSession();
+		
+		if(session.getAttribute("MemberLogId")==null) {
+			response.getWriter().append(String.format("<script> alert('로그인후 이용바랍니다.');location.replace('../member/login');</script>"));
+			return;
+		}
 
 		// DB연결작업(해당서블렛으로 접근했을떄만 db연결을 하게된다
 		String url = Config.getUrl();
@@ -49,11 +57,20 @@ public class ArticleModifyServlet extends HttpServlet {
 			
 			int id = Integer.parseInt(request.getParameter("id"));//수정할 게시글번호를 파라미터로 가져온다
 			
-			SecSql sql =SecSql.from("SELECT * FROM article ");
-			sql.append("WHERE id =?",id);
+			SecSql sql = SecSql.from("SELECT *");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
 			
 			Map<String,Object>articleRow = DBUtil.selectRow(conn, sql);
 			
+			int loginedMemberId =(int)session.getAttribute("loginedMemberId");
+			
+			if(loginedMemberId != (int)articleRow.get("memberId")) {
+				
+				response.getWriter().append(String.format("<script> alert('해당글에 대한 권한이 없습니다.');location.replace('../article/list');</script>"));
+				return;
+			}
+
 			request.setAttribute("articleRow", articleRow);
 			request.getRequestDispatcher("/jsp/article/modify.jsp").forward(request, response);
 		

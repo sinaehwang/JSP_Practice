@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Map;
 
 import com.KoreaIT.java.am.Config;
 import com.KoreaIT.java.am.util.DBUtil;
@@ -14,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/doDelete")
 public class ArticleDeleteServlet extends HttpServlet {
@@ -22,7 +24,14 @@ public class ArticleDeleteServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		response.setContentType("text/html;charser=UTF-8");
-
+		
+		HttpSession session = request.getSession();
+		
+		if(session.getAttribute("MemberLogId")==null) {
+			response.getWriter().append(String.format("<script> alert('로그인후 이용바랍니다.');location.replace('../member/login');</script>"));
+			return;
+		}
+		
 		// DB연결작업(해당서블렛으로 접근했을떄만 db연결을 하게된다
 		String url = Config.getUrl();
 
@@ -49,7 +58,21 @@ public class ArticleDeleteServlet extends HttpServlet {
 			
 			int id = Integer.parseInt(request.getParameter("id"));
 			
-			SecSql sql = SecSql.from("DELETE FROM article");//sql문으로 재수정
+			SecSql sql = SecSql.from("SELECT *");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
+			
+			Map<String,Object>articleRow = DBUtil.selectRow(conn, sql);
+			
+			int loginedMemberId =(int)session.getAttribute("loginedMemberId");
+			
+			if(loginedMemberId != (int)articleRow.get("memberId")) {
+				
+				response.getWriter().append(String.format("<script> alert('해당글에 대한 권한이 없습니다.');location.replace('../article/list');</script>"));
+				return;
+			}
+			
+			sql = SecSql.from("DELETE FROM article");//sql문으로 재수정
 			sql.append("WHERE id=?",id);
 
 			DBUtil.delete(conn, sql);//jsp와 협업필요없이 바로 삭제하면 되니까

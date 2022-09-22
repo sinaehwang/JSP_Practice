@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
+import com.KoreaIT.java.am.service.ArticleService;
 import com.KoreaIT.java.am.util.DBUtil;
 import com.KoreaIT.java.am.util.SecSql;
 
@@ -14,15 +15,16 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class ArticleController {
 	
-	private Connection conn;
 	private HttpServletRequest request;
 	private HttpServletResponse response;
+	private ArticleService articleservice;
 
 	public ArticleController(Connection conn, HttpServletRequest request, HttpServletResponse response) {
 		
-		this.conn = conn;
 		this.request = request;
 		this.response = response;
+		
+		articleservice = new ArticleService(conn);
 		
 	}
 
@@ -38,32 +40,10 @@ public class ArticleController {
 			}
 		}
 		
-		int itemsInAPage =10; //15개씩 가져올것
-
-		int limitFrom = (page-1) * itemsInAPage;//page가 1이면 0~14/2이면 15~29까지 가져오게된다.
+		int totalPage = articleservice.getTotalPage();//실수연산을먼저해서 나머지를 발생시킨후 올림을 실행한후에 정수화를 해야함
 		
-		SecSql sql = SecSql.from("SELECT COUNT(*) AS cnt");
-		sql.append("FROM article");
+		List<Map<String,Object>>articleRows = articleservice.getarticleRows(page);//db에 있는 메소드들이 다 static이기 때문에 객체생성할 필요가 없어짐
 		
-		int totalCount = DBUtil.selectRowIntValue(conn, sql);
-		
-		if(totalCount<0) {
-			response.getWriter().append(String.format("<script> alert('게시글이 없습니다.');location.replace('..home/main');</script>"));
-			return;
-		}
-		
-		int totalPage = (int)Math.ceil((double)totalCount/itemsInAPage);//실수연산을먼저해서 나머지를 발생시킨후 올림을 실행한후에 정수화를 해야함
-		
-		sql = SecSql.from("SELECT A.*,M.name AS writer");//sql문으로 재수정
-		sql.append("FROM article AS A");
-		sql.append("INNER JOIN `member` AS M");
-		sql.append("ON A.memberId =M.id");
-		sql.append("ORDER BY id DESC");
-		sql.append("LIMIT ?,?",limitFrom,itemsInAPage);
-			
-		List<Map<String,Object>>articleRows = DBUtil.selectRows(conn, sql);//db에 있는 메소드들이 다 static이기 때문에 객체생성할 필요가 없어짐
-		
-
 		/*
 		 * for(int i=0; i<articleRows.size(); i++) { Map<String,Object>articleRow =
 		 * articleRows.get(i); int id = (int) articleRow.get("id"); String title =
@@ -73,14 +53,11 @@ public class ArticleController {
 			
 		response.getWriter().append(articleRows.toString()); //db연결로 가져온 Map타입리스트의 모든행들을 보여준다(문장화해서 가져온다)
 		request.setAttribute("articleRows", articleRows);//리스트인 articleRows를 담기위해 setAttribute사용, list.jsp에 보낸다
-		//setAttribute(객체명,객체)->getAttribute(객체명)으로 받을수있다.
 		request.setAttribute("page", page); //페이지 갯수에 맞춰서 페이지수를 구현하려면 jsp에 page파라미터를 넘겨줘야함
 		request.setAttribute("totalPage", totalPage); //전체 페이지 갯수를 jsp에 page파라미터를 넘겨줘야함
 
 		request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
 		
 	}
-
-
 
 }

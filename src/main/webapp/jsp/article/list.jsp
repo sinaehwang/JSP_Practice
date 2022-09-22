@@ -1,3 +1,4 @@
+<%@page import="com.KoreaIT.java.am.dto.Article"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -5,7 +6,7 @@
 <%
 int currrentPage = (int)request.getAttribute("page");
 int totalPage = (int)request.getAttribute("totalPage");
-List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAttribute("articleRows");
+List<Article> articles = (List<Article>)request.getAttribute("articleRows");
 %>
 
 
@@ -43,15 +44,15 @@ List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAt
 		</tr>
 		</thead>
 	<tbody>
-		<%for(Map<String,Object> articleRow:articleRows) {
+		<%for(Article article:articles) { //맵타입으로 만든 articles를 Article 객체로 다시만들면 호출사용이 쉬워짐
 		%>
 		<tr>
-			<td><%=articleRow.get("id") %></td>
-			<td><%=articleRow.get("regDate") %></td>
-			<td><a href="detail?id=<%=articleRow.get("id")%>"><%=articleRow.get("title") %></a></td>
-			<td><%=articleRow.get("writer") %></td>
-			<td><a href="doDelete?id=<%=articleRow.get("id")%>">삭제</a></td>
-			<td><a href="modify?id=<%=articleRow.get("id")%>">수정</a></td>
+			<td><%=article.id %></td>
+			<td><%=article.regDate %></td>
+			<td><a href="detail?id=<%=article.id%>"><%=article.title %></a></td>
+			<td><%=article.writer %></td>
+			<td><a href="doDelete?id=<%=article.id%>">삭제</a></td>
+			<td><a href="modify?id=<%=article.id%>">수정</a></td>
 		</tr>
 		<%} %>
 		</tbody>

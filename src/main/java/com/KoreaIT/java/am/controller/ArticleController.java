@@ -3,11 +3,9 @@ package com.KoreaIT.java.am.controller;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 
+import com.KoreaIT.java.am.dto.Article;
 import com.KoreaIT.java.am.service.ArticleService;
-import com.KoreaIT.java.am.util.DBUtil;
-import com.KoreaIT.java.am.util.SecSql;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +40,8 @@ public class ArticleController {
 		
 		int totalPage = articleservice.getTotalPage();//실수연산을먼저해서 나머지를 발생시킨후 올림을 실행한후에 정수화를 해야함
 		
-		List<Map<String,Object>>articleRows = articleservice.getarticleRows(page);//db에 있는 메소드들이 다 static이기 때문에 객체생성할 필요가 없어짐
+		List<Article> articleRows =  articleservice.getarticleRows(page);
+		//List<Map<String,Object>>articleRows = articleservice.getarticleRows(page);//db에 있는 메소드들이 다 static이기 때문에 객체생성할 필요가 없어짐
 		
 		/*
 		 * for(int i=0; i<articleRows.size(); i++) { Map<String,Object>articleRow =

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.KoreaIT.java.am.Config;
 import com.KoreaIT.java.am.controller.ArticleController;
-import com.KoreaIT.java.am.controller.MemberController;
 import com.KoreaIT.java.am.util.DBUtil;
 import com.KoreaIT.java.am.util.SecSql;
 

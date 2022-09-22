@@ -28,6 +28,17 @@ public class Dispatcher extends HttpServlet {
 		
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html;charser=UTF-8");
+		
+		//db연결전 올바른 주소요청인지 확인하는 작업후 -> 컨트롤러로 작업이전(각 서블렛에서의 기능을 컨트롤러로 통제)
+		
+		String requestUri = request.getRequestURI();
+		
+		String[] requestUriBit = requestUri.split("/");
+
+		if(requestUriBit.length<5) {
+			response.getWriter().append(String.format("<script> alert('올바른 요청이 아닙니다.');</script>"));
+			return;
+		}
 
 		String url = Config.getUrl();
 
@@ -77,14 +88,6 @@ public class Dispatcher extends HttpServlet {
 			
 			//db연결후 모든작업전에 해야하는일 
 			
-			String requestUri = request.getRequestURI();
-			
-			String[] requestUriBit = requestUri.split("/");
-
-			if(requestUriBit.length<5) {
-				response.getWriter().append(String.format("<script> alert('올바른 요청이 아닙니다.');</script>"));
-				return;
-			}
 			
 			String controllerName = requestUriBit[3];
 			
@@ -100,9 +103,6 @@ public class Dispatcher extends HttpServlet {
 				
 			}
 
-			
-			
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
